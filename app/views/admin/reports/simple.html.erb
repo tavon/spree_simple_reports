@@ -1,0 +1,23 @@
+<% content_for :head do %>
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="/assets/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="/assets/admin/jquery.flot.js"></script>
+<%end%>
+
+    <h1>Flot Examples</h1>
+    <div id="placeholder" style="width:600px;height:300px;"></div>
+
+
+<script id="source">
+$(function () {
+   <%last = @all.pop%>
+    var d =  [ <% @all.each do |i,v| %> 
+          [ <%=i%> , <%=v%> ] , 
+          <%end%> [ <%=last[0]%> , <%=last[1]%> ]
+        ]
+
+    $.plot($("#placeholder"), [d ], { xaxis: { mode: "time" } });
+
+});
+</script>
+

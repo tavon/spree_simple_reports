@@ -1,3 +1,4 @@
 Rails.application.routes.draw do
-  # Add your extension routes here
+  match '/admin/reports/simple' => 'admin/reports#simple' , 
+                      :as => "simple_admin_reports"#,  :via  => [:get, :post]
 end
