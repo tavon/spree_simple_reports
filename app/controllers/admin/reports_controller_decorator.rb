@@ -21,13 +21,8 @@ Admin::ReportsController.class_eval do
     search[:order_completed_at_is_not_null] = true
 
     @search = LineItem.metasearch(search)
-    @all = @search.all
-    data = Munger::Data.new :data => @all
-    data.add_column('total') { |row| row.price * row.quantity }
-    @report = Munger::Report.new(:data => data , :columns => [:total , :created_at , :quantity])
-    @all = @all.collect {|i| [i.created_at.to_i * 1000 , i.price * i.quantity ] }
-    #@report.sort('created_at') 
-
+    @data = @search.all.collect {|i| [i.created_at.to_i , i.price * i.quantity ] }
+#    @data = [@data]
 # csv ?      send_data( render_to_string( :csv , :layout => false) , :type => "application/csv" , :filename => "tilaukset.csv") 
   render :template => "admin/reports/simple" 
   end
