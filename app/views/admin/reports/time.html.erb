@@ -67,5 +67,15 @@ $(function () {
 });
 </script>
 
+<script id="source">
+$(function () {
+    var d =  <%= @data.to_json %> ;
+    $.plot($("#placeholder"), [d ], { series: {  bars:   { show: true , fill: true } } ,
+                                      xaxis:  { mode: "time" }  
+                                    });
+
+});
+</script>
+
  </body>
 </html>

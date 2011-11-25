@@ -5,18 +5,12 @@
 <%end%>
 
     <h1>Flot Examples</h1> 
-    <%= @data.length %>->
-    <% @data.bucket(1)%>
-    <%= @data.length %>
     <div id="placeholder" style="width:600px;height:300px;"></div>
 
 <script id="source">
 $(function () {
-    var d =  <%= @data.to_js %> ;
-    $.plot($("#placeholder"), [d ], { series: {  bars:   { show: true , fill: true } } ,
-                                      xaxis:  { mode: "time" }  
-                                    });
-
+    var d =  <%== @flot_data.to_json %> ;
+    $.plot($("#placeholder"), d , <%== @flot_options.to_json %>);
 });
 </script>
 
