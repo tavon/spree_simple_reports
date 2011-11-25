@@ -1,6 +1,5 @@
 <% content_for :head do %>
     <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
-    <script language="javascript" type="text/javascript" src="/assets/jquery.js"></script>
     <script language="javascript" type="text/javascript" src="/assets/admin/jquery.flot.js"></script>
 <%end%>
 
@@ -12,5 +11,83 @@ $(function () {
     var d =  <%== @flot_data.to_json %> ;
     $.plot($("#placeholder"), d , <%== @flot_options.to_json %>);
 });
+</script>
+
+<%content_for :sidebar do%>
+<div>
+  <%= form_for @search , :url => simple_admin_reports_url do |f| %>
+    <div class="box">
+      <h3><%= t(:search) %></h3>
+
+      <div data-hook="admin_products_index_search">
+        <div class="left sub-field">
+          <%= f.label :name_like, t("name") %><br />
+          <%= f.text_field :variant_product_name_like, :size => 15 %>
+        </div>
+        <div class="right sub-field">
+          <%= f.label :option_name_contains  %><br />
+          <%= f.text_field :variant_product_variants_option_values_name_contains, :size => 15 %>
+        </div>
+
+        <div class="left sub-field">
+          <%= f.label :taxons_name_contains  %><br />
+          <%= f.text_field :variant_product_taxons_name_contains, :size => 15 %>
+        </div>
+        <div class="right sub-field">
+          <%= f.label :product_groups_name  %><br />
+          <%= f.text_field :variant_product_product_groups_name_contains, :size => 15 %>
+        </div>
+
+        <label> Price between </label> <br/>
+        <div class="left sub-field">
+          <%= f.text_field :price_greater_than , :size => 6   %><br />
+          <label class="sub"><%= t("more_than") %></label>
+        </div>
+        <div class="right sub-field">
+          <%= f.text_field :price_less_than , :size => 6 %><br />
+          <label><%= t("less_than") %></label>
+        </div>
+
+        <label><%= t("date_range") %></label><br />
+        <div class="date-range-filter">
+          <div class="left sub-field">
+            <%= f.text_field :created_at_greater_than, :class => 'datepicker' %><br />
+            <label class="sub"><%= t("start") %></label>
+          </div>
+          <div class="right sub-field">
+            <%= f.text_field :created_at_less_than, :class => 'datepicker' %><br />
+            <label><%= t("stop") %></label>
+          </div>
+        </div>
+
+        <p><label><%= t("group_by") %></label><br />
+        <%= select_tag :group_by,  options_from_collection_for_select( [[:all,t("all")], [:taxon,t("taxon")] , [:product,t("product")] ,  [ :variant , t("variant")]] , "first" , "last") %></p>
+
+        <p><label><%= t("price_or_quantity") %></label><br />
+          <%= t(:price)%> <%= radio_button_tag :price_or,  :total %> 
+          <%= t(:quantity)%> <%= radio_button_tag :price_or,  :quantity %></p>
+
+        <%= button_tag( :name => 'period' , :value => :day ) do %> <span>Day</span> <%end%> 
+        <%= button_tag( :name => 'period' , :value => :week ) do %> <span>Week</span> <%end%>
+        <%= button_tag( :name => 'period' , :value => :month ) do %> <span>Month</span> <%end%>
+      </div>
+
+    </div>
+
+  <% end %>
+</div>
+
+<%end%>
+<script id="handle">
+handle_date_picker_fields = function(){
+  $('.datepicker').datepicker({
+    dateFormat: 'yy/mm/dd',
+    showOn: "button",
+    buttonImage: "<%= asset_path 'datepicker/cal.gif' %>",
+    buttonImageOnly: true
+  });
+}
+
+handle_date_picker_fields();
 </script>
 
