@@ -20,11 +20,11 @@ Admin::ReportsController.class_eval do
           Time.zone.parse(search[:created_at_less_than]).end_of_day rescue search[:created_at_less_than]
     end
     period = params[:period] || "week"
-    price_or = (params[:price_or] || "amount").to_sym
+    @price_or = (params[:price_or] || "total").to_sym
     search[:order_completed_at_is_not_null] = true
 #:barWidth => 24*60*60*1000
     @search = LineItem.metasearch(search)
-    data = @search.all.collect { |i|  [i.created_at.to_i * 1000 , i.send(price_or) ] }
+    data = @search.all.collect { |i|  [i.created_at.to_i * 1000 , i.send(@price_or) ] }
     @flot_options = { :series => {  :lines =>  { :show => true , :fill => true , :steps => true } } ,
                       :xaxis =>  { :mode => "time" }  
                     }

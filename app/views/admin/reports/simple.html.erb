@@ -61,11 +61,11 @@ $(function () {
         </div>
 
         <p><label><%= t("group_by") %></label><br />
-        <%= select_tag :group_by,  options_from_collection_for_select( [[:all,t("all")], [:taxon,t("taxon")] , [:product,t("product")] ,  [ :variant , t("variant")]] , "first" , "last") %></p>
+        <%= select_tag :group_by,  options_for_select( { t("all") =>  :all , t("taxon") => :taxon  ,  t("product")  => :product  ,  t("variants") => :variants} , params[:group_by])  %></p>
 
-        <p><label><%= t("price_or_quantity") %></label><br />
-          <%= t(:price)%> <%= radio_button_tag :price_or,  :total %> 
-          <%= t(:quantity)%> <%= radio_button_tag :price_or,  :quantity %></p>
+        <p><label><%= t("price_or_quantity") %></label> <%=@price_or%> -- <%=@price_or.class%> <br />
+          <%= t(:price)%> <%= radio_button_tag :price_or,  "total" , :total == @price_or %> 
+          <%= t(:quantity)%> <%= radio_button_tag :price_or,  "quantity" , :quantity == @price_or %></p>
 
         <%= button_tag( :name => 'period' , :value => :day ) do %> <span>Day</span> <%end%> 
         <%= button_tag( :name => 'period' , :value => :week ) do %> <span>Week</span> <%end%>
