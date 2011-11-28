@@ -19,22 +19,40 @@ Admin::ReportsController.class_eval do
       search[:created_at_less_than] =
           Time.zone.parse(search[:created_at_less_than]).end_of_day rescue search[:created_at_less_than]
     end
-    period = params[:period] || "week"
+    @period = params[:period] || "week"
+    days = 1
+    days = 7 if @period == "week"
+    days = 30.5 if @period == "month"
     @price_or = (params[:price_or] || "total").to_sym
     search[:order_completed_at_is_not_null] = true
-#:barWidth => 24*60*60*1000
     @search = LineItem.metasearch(search)
-    data = @search.all.collect { |i|  [i.created_at.to_i * 1000 , i.send(@price_or) ] }
-    @flot_options = { :series => {  :lines =>  { :show => true , :fill => true , :steps => true } } ,
+    @flot_options = { :series => {  :bars =>  { :show => true , :barWidth => days * 24*60*60*1000 } , :stack => 1 } , 
+                      :legend => {  :container => "#legend"} , 
                       :xaxis =>  { :mode => "time" }  
                     }
-    @flot_data = [{ :label => :all , :data => bucket_array( data , period )}]
-    
+    group_data
 # csv ?      send_data( render_to_string( :csv , :layout => false) , :type => "application/csv" , :filename => "tilaukset.csv") 
   render :template => "admin/reports/simple" 
   end
   
-  
+  def group_data
+    @group_by = (params[:group_by] ||:all).to_sym
+    flot = {}
+    if( @group_by == :all )
+      flot[:all] = @search.all 
+    else
+      @search.all.each do |item|
+        bucket = item.send( @group_by )
+        flot[ bucket ] = [] unless flot[bucket]
+        flot[ bucket ] << item        
+      end
+    end
+    @flot_data = flot.collect do |label , data | 
+      chart_data = data.collect {|i| [i.created_at.to_i*1000 , i.send(@price_or)] } ;
+      { :label => label.label , :data => bucket_array( chart_data , @period ) } 
+    end
+  end
+
   # the array is assumed to contain [ js-times (to_i*1000) , number ] arrays
   # a new bucketet array version is returned 
   def bucket_array( array , by)
@@ -54,4 +72,40 @@ Admin::ReportsController.class_eval do
   
 end
 
+Symbol.class_eval do
+  def label
+    self
+  end
+end
+String.class_eval do
+  def label
+    self
+  end
+end
+Taxon.class_eval do
+  def label
+    self.name
+  end
+end
+Product.class_eval do
+  def label
+    self.name
+  end
+end
+Variant.class_eval do 
+  def label
+    self.full_name
+  end
+end
+LineItem.class_eval do
+  def by_taxon
+    self.variant.product.taxons.first || "none"
+  end
+  def by_product
+    self.variant.product
+  end
+  def by_variant
+    self.variant
+  end
+end
 
