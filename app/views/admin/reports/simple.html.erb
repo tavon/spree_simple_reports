@@ -4,8 +4,7 @@
     <script language="javascript" type="text/javascript" src="/assets/admin/jquery.flot.stack.js"></script>
 <%end%>
 
-    <h1>Flot Examples</h1> 
-    <div id="placeholder" style="width:600px;height:300px;"></div>
+    <div id="placeholder" style="width:800px;height:400px;"></div>
 
 <script id="source">
 $(function () {
@@ -14,7 +13,7 @@ $(function () {
 });
 </script>
 
-<div id="legend" style="width=200px;"> </div>
+<div id="legend"> </div>
 <%content_for :sidebar do%>
 <div>
   <%= form_for @search , :url => simple_admin_reports_url do |f| %>
