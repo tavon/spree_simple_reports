@@ -51,7 +51,7 @@ Admin::ReportsController.class_eval do
       end
     end
     @flot_data = flot.collect do |label , data |
-      { :label => label.label , :data => bucket_array( data , smallest , largest ) } 
+      { :label => label , :data => bucket_array( data , smallest , largest ) } 
     end
   end
 
