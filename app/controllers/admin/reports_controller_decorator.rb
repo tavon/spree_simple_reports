@@ -53,28 +53,30 @@ Admin::ReportsController.class_eval do
     @flot_data = flot.collect do |label , data |
       buck = bucket_array( data , smallest , largest )
       sum = buck.inject(0.0){|total , val | total + val[1] }
-      { :label => "#{label} #{sum}" , :data => buck } 
+      puts "#{label} #{sum}"
+      { :label => "#{label} =#{sum}" , :data => buck } 
     end
+    @flot_data.sort!{ |a,b| b[:label].split("=")[1].to_f <=> a[:label].split("=")[1].to_f }
+  end
+  
+  def group_options
+    opt = { t("all") =>  :all , t("taxon") => :by_taxon  ,  
+      t("product")  => :by_product  ,  t("variants") => :by_variant}
+    Property.all.each { |p| opt[p.name] = p.name }
+    opt
+  end
     
-    def group_options
-      opt = { t("all") =>  :all , t("taxon") => :by_taxon  ,  
-        t("product")  => :by_product  ,  t("variants") => :by_variant}
-      Property.all.each { |p| opt[p.name] = p.name }
-      opt
-    end
-    
-    def get_bucket item
-      case @group_by 
-      when "by_taxon"
-          item.variant.product.taxons.first.blank? ? "none" : item.variant.product.taxons.first.name
-      when "by_product"
-          item.variant.product.name
-      when "by_variant"
-          item.variant.full_name
-      else
-        pps = item.variant.product.product_properties.detect{|p| p.property.name == @group_by}
-        pps ? pps.value : "none"
-      end
+  def get_bucket item
+    case @group_by 
+    when "by_taxon"
+        item.variant.product.taxons.first.blank? ? "none" : item.variant.product.taxons.first.name
+    when "by_product"
+        item.variant.product.name
+    when "by_variant"
+        item.variant.full_name
+    else
+      pps = item.variant.product.product_properties.detect{|p| p.property.name == @group_by}
+      pps ? pps.value : "none"
     end
   end
 
