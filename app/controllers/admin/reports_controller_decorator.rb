@@ -58,14 +58,7 @@ Admin::ReportsController.class_eval do
     end
     @flot_data.sort!{ |a,b| b[:label].split("=")[1].to_f <=> a[:label].split("=")[1].to_f }
   end
-  
-  def group_options
-    opt = { t("all") =>  :all , t("taxon") => :by_taxon  ,  
-      t("product")  => :by_product  ,  t("variants") => :by_variant}
-    Property.all.each { |p| opt[p.name] = p.name }
-    opt
-  end
-    
+      
   def get_bucket item
     case @group_by 
     when "by_taxon"
