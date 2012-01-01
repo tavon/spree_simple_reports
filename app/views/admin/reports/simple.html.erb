@@ -35,8 +35,8 @@ $(function () {
           <%= f.text_field :variant_product_taxons_name_contains, :size => 15 %>
         </div>
         <div class="right sub-field">
-          <%= f.label :product_groups_name  %><br />
-          <%= f.text_field :variant_product_product_groups_name_contains, :size => 15 %>
+          <%= f.label :properties_value  %><br />
+          <%= f.text_field :variant_product_product_properties_value_contains, :size => 15 %>
         </div>
 
         <label> Price between </label> <br/>
@@ -62,7 +62,7 @@ $(function () {
         </div>
 
         <p><label><%= t("group_by") %></label><br />
-        <%= select_tag :group_by,  options_for_select( { t("all") =>  :all , t("taxon") => :by_taxon  ,  t("product")  => :by_product  ,  t("variants") => :by_variant} , @group_by)  %></p>
+        <%= select_tag :group_by,  options_for_select( group_options , @group_by)  %></p>
 
         <p><label><%= t("price_or_quantity") %></label> <%=@price_or%> -- <%=@price_or.class%> <br />
           <%= t(:price)%> <%= radio_button_tag :price_or,  "total" , :total == @price_or %> 

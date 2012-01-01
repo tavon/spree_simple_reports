@@ -36,22 +36,45 @@ Admin::ReportsController.class_eval do
   end
   
   def group_data
-    @group_by = (params[:group_by] ||:all).to_sym
+    @group_by = (params[:group_by] || "all" )
     all = @search.all
     flot = {}
     smallest = all.first.created_at
     largest = all.last.created_at
-    if( @group_by == :all )
-      flot[:all] = all
+    if( @group_by == "all" )
+      flot["all"] = all
     else
       @search.all.each do |item|
-        bucket = item.send( @group_by )
+        bucket = get_bucket(item)
         flot[ bucket ] = [] unless flot[bucket]
         flot[ bucket ] << item        
       end
     end
     @flot_data = flot.collect do |label , data |
-      { :label => label , :data => bucket_array( data , smallest , largest ) } 
+      buck = bucket_array( data , smallest , largest )
+      sum = buck.inject(0.0){|total , val | total + val[1] }
+      { :label => "#{label} #{sum}" , :data => buck } 
+    end
+    
+    def group_options
+      opt = { t("all") =>  :all , t("taxon") => :by_taxon  ,  
+        t("product")  => :by_product  ,  t("variants") => :by_variant}
+      Property.all.each { |p| opt[p.name] = p.name }
+      opt
+    end
+    
+    def get_bucket item
+      case @group_by 
+      when "by_taxon"
+          item.variant.product.taxons.first.blank? ? "none" : item.variant.product.taxons.first.name
+      when "by_product"
+          item.variant.product.name
+      when "by_variant"
+          item.variant.full_name
+      else
+        pps = item.variant.product.product_properties.detect{|p| p.property.name == @group_by}
+        pps ? pps.value : "none"
+      end
     end
   end
 
@@ -79,19 +102,4 @@ Admin::ReportsController.class_eval do
   
 end
 
-LineItem.class_eval do
-  def by_taxon
-    if self.variant.product.taxons.first 
-      self.variant.product.taxons.first.name
-    else
-      "none"
-    end
-  end
-  def by_product
-    self.variant.product.name
-  end
-  def by_variant
-    self.variant.full_name
-  end
-end
 
