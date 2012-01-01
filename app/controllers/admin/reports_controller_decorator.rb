@@ -1,8 +1,8 @@
 Admin::ReportsController.class_eval do
 
-  before_filter :kludge 
+  before_filter :kludge_simple 
   
-  def kludge
+  def kludge_simple
     return if Admin::ReportsController::AVAILABLE_REPORTS.has_key?(:simple)
     Admin::ReportsController::AVAILABLE_REPORTS.merge!({ :simple => {:name => "Simple", :description => "Simple reporting with options"}  })
   end
