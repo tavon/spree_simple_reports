@@ -64,7 +64,7 @@ $(function () {
         <p><label><%= t("group_by") %></label><br />
         <%= select_tag :group_by,  options_for_select( group_options , @group_by)  %></p>
 
-        <p><label><%= t("price_or_quantity") %></label> <%=@price_or%> -- <%=@price_or.class%> <br />
+        <p><label><%= t("price_or_quantity") %></label>  <br />
           <%= t(:price)%> <%= radio_button_tag :price_or,  "total" , :total == @price_or %> 
           <%= t(:quantity)%> <%= radio_button_tag :price_or,  "quantity" , :quantity == @price_or %></p>
 
