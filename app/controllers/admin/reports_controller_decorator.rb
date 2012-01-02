@@ -50,9 +50,10 @@ Admin::ReportsController.class_eval do
   def group_data
     @group_by = (params[:group_by] || "all" )
     all = @search.all
+    puts all.count
     flot = {}
-    smallest = all.first.created_at
-    largest = all.last.created_at
+    smallest = all.first ? all.first.created_at : Time.now - 1.week
+    largest = all.first ? all.last.created_at : Time.now
     if( @group_by == "all" )
       flot["all"] = all
     else
