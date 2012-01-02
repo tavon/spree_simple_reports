@@ -25,7 +25,19 @@ Admin::ReportsController.class_eval do
     @days = 30.5 if @period == "month"
     @price_or = (params[:price_or] || "total").to_sym
     search[:order_completed_at_is_not_null] = true
-    @search = LineItem.metasearch(search)
+    search_on = case @group_by
+      when "all"
+        LineItem
+      when "by_taxon"
+        LineItem.includes(:taxon)
+      when "by_product"
+        LineItem
+      when "by_variant"
+        LineItem
+      else
+        LineItem.includes(:product => [:product_properties])
+      end
+    @search = search_on.includes(:product).metasearch(search)
     @flot_options = { :series => {  :bars =>  { :show => true , :barWidth => @days * 24*60*60*1000 } , :stack => 0 } , 
                       :legend => {  :container => "#legend"} , 
                       :xaxis =>  { :mode => "time" }  
@@ -53,13 +65,14 @@ Admin::ReportsController.class_eval do
     @flot_data = flot.collect do |label , data |
       buck = bucket_array( data , smallest , largest )
       sum = buck.inject(0.0){|total , val | total + val[1] }
-      puts "#{label} #{sum}"
+      #puts "#{label} #{sum}"
       { :label => "#{label} =#{sum}" , :data => buck } 
     end
     @flot_data.sort!{ |a,b| b[:label].split("=")[1].to_f <=> a[:label].split("=")[1].to_f }
   end
       
   def get_bucket item
+    return "all" if @group_by == "all"
     case @group_by 
     when "by_taxon"
         item.variant.product.taxons.first.blank? ? "none" : item.variant.product.taxons.first.name
